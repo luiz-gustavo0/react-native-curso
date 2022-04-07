@@ -100,7 +100,13 @@ function ExpensesContextProvider({ children }) {
     dispatch({ type: 'UPDATE', payload: { id: id, data: expenseData } });
   }
 
-  return <ExpensesContext.Provider>{children}</ExpensesContext.Provider>;
+  return (
+    <ExpensesContext.Provider
+      value={{ addExpense, deleteExpense, expenses, updateExpense }}
+    >
+      {children}
+    </ExpensesContext.Provider>
+  );
 }
 
 export default ExpensesContextProvider;
