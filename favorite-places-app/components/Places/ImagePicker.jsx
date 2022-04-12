@@ -8,7 +8,7 @@ import {
 import { Colors } from '../../constants/colors';
 import { OutlinedButton } from '../OutlinedButton';
 
-export const ImagePicker = () => {
+export const ImagePicker = ({ onImagePicker }) => {
   const [pickedImage, setPickedImage] = useState();
   const [infoCameraPermission, requestPermisssion] = useCameraPermissions();
 
@@ -43,6 +43,7 @@ export const ImagePicker = () => {
     });
 
     setPickedImage(image.uri);
+    onImagePicker(image.uri);
   }
 
   return (

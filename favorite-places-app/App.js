@@ -1,15 +1,37 @@
+import { useEffect, useState } from 'react';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { StatusBar } from 'expo-status-bar';
-import IconButton from './components/IconButton';
+import AppLoading from 'expo-app-loading';
+
 import { Colors } from './constants/colors';
 
+import IconButton from './components/IconButton';
 import AddPlaces from './screens/AddPlaces';
 import AllPlaces from './screens/AllPlaces';
+import Map from './screens/Map';
+import { init } from './utils/database';
+import PlaceDetails from './screens/PlaceDetails';
 
 const Stack = createNativeStackNavigator();
 
 export default function App() {
+  const [dbInitialize, setDbInitialize] = useState(false);
+
+  useEffect(() => {
+    init()
+      .then(() => {
+        setDbInitialize(true);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  }, []);
+
+  if (!dbInitialize) {
+    return <AppLoading />;
+  }
+
   return (
     <>
       <StatusBar style='auto' />
@@ -45,6 +67,8 @@ export default function App() {
               title: 'Add new place',
             }}
           />
+          <Stack.Screen name='Map' component={Map} />
+          <Stack.Screen name='PlaceDetails' component={PlaceDetails} />
         </Stack.Navigator>
       </NavigationContainer>
     </>
