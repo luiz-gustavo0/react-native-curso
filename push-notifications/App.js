@@ -4,21 +4,47 @@ import { StyleSheet, Text, View, Button } from 'react-native';
 import * as Notifications from 'expo-notifications';
 import * as Permissions from 'expo-permissions';
 
-export default function App() {
-  useEffect(() => {
-    Permissions.getAsync(Permissions.NOTIFICATIONS)
-      .then((statusObj) => {
-        if (statusObj.status !== 'granted') {
-          return Permissions.askAsync(Permissions.NOTIFICATIONS);
-        }
+Notifications.setNotificationHandler({
+  handleNotification: async () => {
+    return {
+      shouldShowAlert: true,
+    };
+  },
+});
 
-        return statusObj;
-      })
-      .then((statusObj) => {
-        if (statusObj.status !== 'granted') {
-          return;
-        }
+export default function App() {
+  // useEffect(() => {
+  //   Permissions.getAsync(Permissions.NOTIFICATIONS)
+  //     .then((statusObj) => {
+  //       if (statusObj.status !== 'granted') {
+  //         return Permissions.askAsync(Permissions.NOTIFICATIONS);
+  //       }
+
+  //       return statusObj;
+  //     })
+  //     .then((statusObj) => {
+  //       if (statusObj.status !== 'granted') {
+  //         return;
+  //       }
+  //     });
+  // }, []);
+
+  useEffect(() => {
+    const backgroundSubscription =
+      Notifications.addNotificationResponseReceivedListener((response) => {
+        console.log('BACKGROUND:', response);
       });
+
+    const subscription = Notifications.addNotificationReceivedListener(
+      (notification) => {
+        console.log('NO BACKGROUND:', notification);
+      }
+    );
+
+    return () => {
+      subscription.remove();
+      backgroundSubscription.remove();
+    };
   }, []);
 
   const handleTriggerNotification = () => {
@@ -28,7 +54,7 @@ export default function App() {
         body: 'Notifiation 1',
       },
       trigger: {
-        seconds: 10,
+        seconds: 5,
       },
     });
   };
